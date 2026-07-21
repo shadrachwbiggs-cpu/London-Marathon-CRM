@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marathon Sponsorship CRM</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <h1>🏃 Marathon Sponsorship CRM</h1>
+  <div class="stats" id="stats">
+    <div class="stat">
+      <span class="stat-label">Pledged Total</span>
+      <span class="stat-value" id="statPledged">£0</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Committed</span>
+      <span class="stat-value" id="statCommitted">0</span>
+    </div>
+    <div class="stat stat-alert" id="statFollowupsWrap">
+      <span class="stat-label">Follow-ups Due</span>
+      <span class="stat-value" id="statFollowups">0</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="toolbar">
+    <input type="search" id="searchInput" placeholder="Search business or contact name...">
+
+    <select id="statusFilter">
+      <option value="">All Statuses</option>
+      <option>Not Contacted</option>
+      <option>Emailed</option>
+      <option>Called</option>
+      <option>Follow-Up Needed</option>
+      <option>Meeting Scheduled</option>
+      <option>Committed</option>
+      <option>Declined</option>
+    </select>
+
+    <label class="checkbox-label">
+      <input type="checkbox" id="followupFilter">
+      Follow-ups due/overdue
+    </label>
+
+    <div class="toolbar-spacer"></div>
+
+    <button id="btnTemplate" class="btn btn-secondary">✉️ Email Template</button>
+    <button id="btnAdd" class="btn btn-primary">+ Add Business</button>
+  </div>
+
+  <div class="table-wrap">
+    <table id="table">
+      <thead>
+        <tr>
+          <th data-sort="business_name">Business</th>
+          <th data-sort="contact_name">Contact</th>
+          <th data-sort="contact_email">Email</th>
+          <th data-sort="contact_phone">Phone</th>
+          <th data-sort="status">Status</th>
+          <th data-sort="last_contact_date">Last Contact</th>
+          <th data-sort="contact_method">Method</th>
+          <th data-sort="follow_up_date">Follow-Up</th>
+          <th data-sort="pledged_amount">Pledged</th>
+          <th class="col-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+      </tbody>
+    </table>
+    <p id="emptyState" class="empty-state hidden">No businesses match your filters.</p>
+  </div>
+</main>
+
+<!-- Add/Edit Business Modal -->
+<div class="modal-overlay hidden" id="businessModalOverlay">
+  <div class="modal">
+    <h2 id="businessModalTitle">Add Business</h2>
+    <form id="businessForm">
+      <input type="hidden" id="businessId">
+
+      <label>Business Name *
+        <input type="text" id="f_business_name" required>
+      </label>
+
+      <div class="form-row">
+        <label>Contact Person
+          <input type="text" id="f_contact_name">
+        </label>
+        <label>Contact Phone
+          <input type="tel" id="f_contact_phone">
+        </label>
+      </div>
+
+      <label>Contact Email
+        <input type="email" id="f_contact_email">
+      </label>
+
+      <div class="form-row">
+        <label>Status
+          <select id="f_status">
+            <option>Not Contacted</option>
+            <option>Emailed</option>
+            <option>Called</option>
+            <option>Follow-Up Needed</option>
+            <option>Meeting Scheduled</option>
+            <option>Committed</option>
+            <option>Declined</option>
+          </select>
+        </label>
+        <label>Contact Method
+          <select id="f_contact_method">
+            <option value="">--</option>
+            <option value="email">Email</option>
+            <option value="phone">Phone</option>
+            <option value="in-person">In-Person</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="form-row">
+        <label>Date of Last Contact
+          <input type="date" id="f_last_contact_date">
+        </label>
+        <label>Follow-Up Date
+          <input type="date" id="f_follow_up_date">
+        </label>
+      </div>
+
+      <label>Pledged Amount (£)
+        <input type="number" step="0.01" min="0" id="f_pledged_amount">
+      </label>
+
+      <label>Notes
+        <textarea id="f_notes" rows="6"></textarea>
+      </label>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="btnCancelBusiness">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Quick Log Modal -->
+<div class="modal-overlay hidden" id="logModalOverlay">
+  <div class="modal">
+    <h2>Log Outreach: <span id="logBusinessName"></span></h2>
+    <form id="logForm">
+      <input type="hidden" id="logBusinessId">
+
+      <div class="form-row">
+        <label>Date
+          <input type="date" id="log_date">
+        </label>
+        <label>Method
+          <select id="log_method">
+            <option value="">--</option>
+            <option value="email">Email</option>
+            <option value="phone">Phone</option>
+            <option value="in-person">In-Person</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+      </div>
+
+      <label>New Status
+        <select id="log_status">
+          <option>Not Contacted</option>
+          <option>Emailed</option>
+          <option>Called</option>
+          <option>Follow-Up Needed</option>
+          <option>Meeting Scheduled</option>
+          <option>Committed</option>
+          <option>Declined</option>
+        </select>
+      </label>
+
+      <div class="form-row">
+        <label>Follow-Up Date
+          <input type="date" id="log_follow_up_date">
+        </label>
+        <label>Pledged Amount (£)
+          <input type="number" step="0.01" min="0" id="log_pledged_amount">
+        </label>
+      </div>
+
+      <label>Note
+        <textarea id="log_note" rows="4" placeholder="What happened on this contact?"></textarea>
+      </label>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="btnCancelLog">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Log</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Email Template Modal -->
+<div class="modal-overlay hidden" id="templateModalOverlay">
+  <div class="modal">
+    <h2>Email Outreach Template</h2>
+    <p class="hint">Edit and save your reusable template below. Use the Copy button when you're ready to paste it into a new email.</p>
+    <textarea id="templateText" rows="16"></textarea>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" id="btnCloseTemplate">Close</button>
+      <button type="button" class="btn btn-secondary" id="btnCopyTemplate">📋 Copy</button>
+      <button type="button" class="btn btn-primary" id="btnSaveTemplate">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="modal-overlay hidden" id="deleteModalOverlay">
+  <div class="modal modal-small">
+    <h2>Delete Business?</h2>
+    <p id="deleteConfirmText"></p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" id="btnCancelDelete">Cancel</button>
+      <button type="button" class="btn btn-danger" id="btnConfirmDelete">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast hidden" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
