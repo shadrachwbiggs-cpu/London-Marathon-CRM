@@ -6,7 +6,16 @@ small web app backed by a SQLite file on your machine.
 
 ## Setup
 
-Requires [Node.js](https://nodejs.org/) 18+.
+Requires [Node.js](https://nodejs.org/) 18+ — install it once from nodejs.org
+if you don't already have it.
+
+**macOS:** after cloning the repo, just double-click **`Start CRM.command`**.
+It installs dependencies on the very first run, starts the app, and opens it
+in your browser automatically. Leave that Terminal window open while you use
+the app; closing it (or pressing Ctrl+C) stops the server. Next time, just
+double-click it again — no reinstall needed.
+
+**Manual / other platforms:**
 
 ```bash
 npm install
